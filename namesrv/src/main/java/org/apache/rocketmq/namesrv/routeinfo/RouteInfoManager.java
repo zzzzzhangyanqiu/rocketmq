@@ -361,6 +361,9 @@ public class RouteInfoManager {
             BrokerLiveInfo prevBrokerLiveInfo = this.brokerLiveTable.put(brokerAddrInfo,
                 new BrokerLiveInfo(
                     System.currentTimeMillis(),
+                    //BrokerLiveInfo.heartbeatTimeoutMillis会在重新注册时判断，如果传了timeoutMillis则使用
+                    //没传则还是默认的120s
+                    //timeoutMillis就是注册时broker传过来的requestHeader.getHeartbeatTimeoutMillis()
                     timeoutMillis == null ? DEFAULT_BROKER_CHANNEL_EXPIRED_TIME : timeoutMillis,
                     topicConfigWrapper == null ? new DataVersion() : topicConfigWrapper.getDataVersion(),
                     channel,
@@ -799,6 +802,7 @@ public class RouteInfoManager {
             log.info("start scanNotActiveBroker");
             for (Entry<BrokerAddrInfo, BrokerLiveInfo> next : this.brokerLiveTable.entrySet()) {
                 long last = next.getValue().getLastUpdateTimestamp();
+                //变化2：活动时间由写死的120秒改为了BrokerLiveInfo.heartbeatTimeoutMillis
                 long timeoutMillis = next.getValue().getHeartbeatTimeoutMillis();
                 if ((last + timeoutMillis) < System.currentTimeMillis()) {
                     RemotingHelper.closeChannel(next.getValue().getChannel());
