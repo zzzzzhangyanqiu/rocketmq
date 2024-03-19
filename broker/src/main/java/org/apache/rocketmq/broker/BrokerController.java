@@ -1606,7 +1606,9 @@ public class BrokerController {
             }
         }, 1000 * 10, Math.max(10000, Math.min(brokerConfig.getRegisterNameServerPeriod(), 60000)), TimeUnit.MILLISECONDS));
 
+        //如果开启了Slave代理Master模式
         if (this.brokerConfig.isEnableSlaveActingMaster()) {
+            //发送轻量级心跳
             scheduleSendHeartbeat();
 
             scheduledFutures.add(this.syncBrokerMemberGroupExecutorService.scheduleAtFixedRate(new AbstractBrokerRunnable(this.getBrokerIdentity()) {
@@ -1621,7 +1623,9 @@ public class BrokerController {
             }, 1000, this.brokerConfig.getSyncBrokerMemberGroupPeriod(), TimeUnit.MILLISECONDS));
         }
 
+        //如果开启了controller模式
         if (this.brokerConfig.isEnableControllerMode()) {
+            //发送轻量级心跳
             scheduleSendHeartbeat();
         }
 
@@ -1655,6 +1659,7 @@ public class BrokerController {
                 }
 
             }
+            //brokerConfig.getBrokerHeartbeatInterval默认值为1秒一次
         }, 1000, brokerConfig.getBrokerHeartbeatInterval(), TimeUnit.MILLISECONDS));
     }
 

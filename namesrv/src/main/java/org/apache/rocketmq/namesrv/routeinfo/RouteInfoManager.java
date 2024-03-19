@@ -464,6 +464,7 @@ public class RouteInfoManager {
     }
 
     public void updateBrokerInfoUpdateTimestamp(final String clusterName, final String brokerAddr) {
+        //更新Broker存活列表的Broker活动时间
         BrokerAddrInfo addrInfo = new BrokerAddrInfo(clusterName, brokerAddr);
         BrokerLiveInfo prev = this.brokerLiveTable.get(addrInfo);
         if (prev != null) {
