@@ -17,8 +17,6 @@
 
 package org.apache.rocketmq.client;
 
-import java.io.File;
-import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -29,6 +27,9 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.common.topic.TopicValidator;
 import org.apache.rocketmq.remoting.protocol.ResponseCode;
+
+import java.io.File;
+import java.util.Properties;
 
 import static org.apache.rocketmq.common.topic.TopicValidator.isTopicOrGroupIllegal;
 
@@ -63,11 +64,11 @@ public class Validators {
         if (null == msg) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message is null");
         }
-        // topic
+        // 校验topic合法性
         Validators.checkTopic(msg.getTopic());
         Validators.isNotAllowedSendTopic(msg.getTopic());
 
-        // body
+        // 校验body合法性
         if (null == msg.getBody()) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body is null");
         }
@@ -81,6 +82,7 @@ public class Validators {
                 "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());
         }
 
+        // 校验lmq分发配置合法性
         String lmqPath = msg.getUserProperty(MessageConst.PROPERTY_INNER_MULTI_DISPATCH);
         if (StringUtils.contains(lmqPath, File.separator)) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL,
